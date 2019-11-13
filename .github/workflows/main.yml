@@ -25,9 +25,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Setup
-        uses: andrewmcodes/rails-test-runner-action@master
       - name: Build and run tests
+        uses: andrewmcodes/rails-test-runner-action@master
         env:
           DATABASE_URL: postgres://postgres:@localhost:5432/test
           REDIS_URL: redis://localhost:6379/0
