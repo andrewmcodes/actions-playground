@@ -26,19 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Setup
-        uses: docker://andrewmcodes/containers:latest
-      - name: Bundle Install
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
-      - name: Yarn
-        run: yarn
+        uses: andrewmcodes/rails-test-runner-action@master
       - name: Build and run tests
         env:
           DATABASE_URL: postgres://postgres:@localhost:5432/test
           REDIS_URL: redis://localhost:6379/0
-          RAILS_ENV: test
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-        run: |
-          bundle exec rails db:prepare
-          bundle exec rails test
