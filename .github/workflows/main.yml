@@ -31,6 +31,7 @@ jobs:
           DATABASE_URL: postgres://postgres:@localhost:5432
           REDIS_URL: redis://localhost:6379/0
           RAILS_ENV: test
+      - name: Bundle and run
         run: |
           bundle install --jobs 4 --retry 3
           yarn install --frozen-lockfile
