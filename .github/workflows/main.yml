@@ -24,9 +24,15 @@ jobs:
         options: --entrypoint redis-server
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Build and run tests
-        uses: andrewmcodes/rails-test-runner-action@master
+      - uses: actions/checkout@master
+      - name: Install
+        uses: docker://culturehq/actions-bundler:latest
+        with:
+          args: install
+      - name: Test
+        uses: docker://culturehq/actions-bundler:latest
+        with:
+          args: exec rake test
         env:
           DATABASE_URL: postgres://postgres:@127.0.0.1:5432
           REDIS_URL: redis://127.0.0.1:6379/0
