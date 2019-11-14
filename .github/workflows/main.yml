@@ -8,7 +8,22 @@ on:
       - master
 jobs:
   test:
-    runs-on: ubuntu-latest
+    container:
+      image: andrewmcodes/rails-test-environment:latest
+      env:
+        PG_HOST: 'postgres'
+        PG_USER: postgres
+        PG_PORT: 5432
+        REDIS_URL: redis://redis:6379/0
+        RAILS_ENV: test
+        SELENIUM_HOST: selenium
+        SELENIUM_PORT: 4444
+      volumes:
+        - repo_gems:/repo/vendor/cache
+        - repo_modules:/repo/node_modules
+        - bundle:/usr/local/bundle
+
+    # runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:11
@@ -48,8 +63,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
-      - uses: docker://andrewmcodes/rails-test-environment:latest
+      - run: pwd
+      - name: Install dependencies
         run: |
+          ruby -v
+          bundler -v
           bundle install --path vendor/bundle --jobs 4 --retry 3
           bundle cache --all -V
           yarn install
@@ -58,14 +76,6 @@ jobs:
         run: |
           bin/rails db:test:prepare
           bin/rails test
-        env:
-          PG_HOST: 'postgres'
-          PG_USER: postgres
-          PG_PORT: 5432
-          REDIS_URL: redis://redis:6379/0
-          RAILS_ENV: test
-          SELENIUM_HOST: selenium
-          SELENIUM_PORT: 4444
 
       - name: Slack Notifier
         uses: k0kubun/action-slack@v1.0.0
