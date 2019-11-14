@@ -1,4 +1,5 @@
-name: Main
+name: Linters
+
 on:
   pull_request:
     branches:
@@ -7,39 +8,15 @@ on:
     branches:
       - master
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
 
     container:
       image: andrewmcodes/rails-test-environment:latest
-      env:
-        PG_HOST: 'postgres'
-        PG_USER: postgres
-        PG_PORT: 5432
-        REDIS_URL: redis://redis:6379/0
-        RAILS_ENV: test
-        SELENIUM_HOST: selenium
-        SELENIUM_PORT: 4444
       volumes:
         - /usr/actions-playground/vendor/cache
         - /usr/actions-playground/node_modules
         - bundle:/usr/local/bundle
-
-    services:
-      postgres:
-        image: postgres:11
-        env:
-          POSTGRES_USER: postgres
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis
-        ports: ['6379:6379']
-        options: --entrypoint redis-server
 
     steps:
       - uses: actions/checkout@master
@@ -66,17 +43,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ruby -v
-          bundler -v
           bundle install --path vendor/bundle --jobs 4 --retry 3
           bundle cache --all -V
           yarn install
 
-      - name: Run tests
-        run: |
-          bin/rails db:test:prepare
-          bin/rails test -p
-          bin/rails test:system
+      - name: Run standardrb check
+        run: bundle exec standardrb --check --format progress
+
+      - name: Run prettier-standard check
+        run: yarn run prettier-standard --check app/**/*.js
+
+      - name: Run zeitwerk check
+        run: bundle exec rails zeitwerk:check
 
       - name: Slack Notifier
         uses: k0kubun/action-slack@v1.0.0
