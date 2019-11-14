@@ -48,16 +48,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
+      - uses: docker://andrewmcodes/rails-test-environment:latest
+
       - name: Yarn install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        uses: andrewmcodes/rails-test-runner-action@master
-        with:
-          args: yarn install
+        run: yarn install
 
       - name: Bundle install
-        uses: andrewmcodes/rails-test-runner-action@master
-        with:
-          args: bundle config path vendor/bundle && bundle install --path vendor/bundle --jobs 4 --retry 3 && bin/rails db:test:prepare && bin/rails test
+        run: |
+          bundle config path vendor/bundle
+          bundle install --path vendor/bundle --jobs 4 --retry 3
+
+      - name: Run tests
+        run: |
+          bin/rails db:test:prepare
+          bin/rails test
         env:
           PG_HOST: 'postgres'
           PG_USER: postgres
