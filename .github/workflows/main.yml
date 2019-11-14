@@ -25,6 +25,10 @@ jobs:
         ports: ['6379:6379']
         options: --entrypoint redis-server
 
+      selenium:
+        image: selenium/standalone-chrome-debug:3.0.1-germanium
+        ports: ['4444:4444', '5900:5900']
+
     steps:
       - uses: actions/checkout@master
 
@@ -56,13 +60,20 @@ jobs:
       - name: Bundle install
         uses: andrewmcodes/rails-test-runner-action@master
         with:
-          args: bundle install --path vendor/bundle --jobs 4 --retry 3 && bin/rails db:test:prepare && bin/rails t
+          args: bundle config path vendor/bundle && bundle install --path vendor/bundle --jobs 4 --retry 3
+
+      - name: Run test
+        uses: andrewmcodes/rails-test-runner-action@master
+        with:
+          args: bin/rails db:test:prepare && bin/rails t
         env:
           PG_HOST: 'postgres'
           PG_USER: postgres
           PG_PORT: 5432
           REDIS_URL: redis://redis:6379/0
           RAILS_ENV: test
+          SELENIUM_HOST: selenium
+          SELENIUM_PORT: 4444
 
       - name: Slack Notifier
         uses: k0kubun/action-slack@v1.0.0
