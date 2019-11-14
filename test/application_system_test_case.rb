@@ -1,5 +1,5 @@
 require "test_helper"
-require "webdrivers/chromedriver"
+# require "webdrivers/chromedriver"
 
 if ENV["SELENIUM_REMOTE_URL"]
   Capybara.javascript_driver = :selenium
@@ -18,5 +18,5 @@ if ENV["SELENIUM_REMOTE_URL"]
 end
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
-     driven_by :selenium, using: :headless_chrome
+  driven_by :selenium, using: :headless_chrome
 end
