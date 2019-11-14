@@ -5,9 +5,8 @@ jobs:
     name: Reviewdog Rubocop
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code.
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v1
       - name: rubocop
-        uses: mgrachev/action-rubocop@master
-        with:
-          github_token: ${{ secrets.github_token }}
+        uses: andrewmcodes/reviewdog-rubocop-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
