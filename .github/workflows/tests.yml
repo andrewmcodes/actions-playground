@@ -72,7 +72,6 @@ jobs:
       - name: Install dependencies
         run: |
           bundle install --path vendor/bundle --jobs 4 --retry 3
-          bundle install --jobs 4 --retry 3
           yarn install
 
       - name: Run tests
