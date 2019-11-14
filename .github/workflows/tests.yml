@@ -49,6 +49,7 @@ jobs:
       - uses: actions/checkout@master
       - name: chromedriver?
         run: |
+          uname -i
           echo "==================="
           ls /usr/bin
           echo "==================="
