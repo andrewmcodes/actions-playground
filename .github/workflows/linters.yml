@@ -48,7 +48,7 @@ jobs:
           yarn install
 
       - name: Run standardrb check
-        run: bundle exec standardrb --check --format progress
+        run: bundle exec standardrb --format progress
 
       - name: Run prettier-standard check
         run: yarn run prettier-standard --check app/**/*.js
