@@ -8,5 +8,5 @@ jobs:
       - uses: actions/checkout@v1
       - name: rubocop
         uses: andrewmcodes/reviewdog-rubocop-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+        with:
+          github_token: ${{ secrets.github_token }}
