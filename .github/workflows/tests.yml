@@ -21,9 +21,9 @@ jobs:
         RAILS_ENV: test
         SELENIUM_REMOTE_URL: http://webdriver_chrome:4444/wd/hub
       volumes:
-        - /usr/actions-playground/vendor/cache
+        # - /usr/actions-playground/vendor/cache
         - /usr/actions-playground/node_modules
-        - bundle:/usr/local/bundle
+        # - bundle:/usr/local/bundle
 
     services:
       postgres:
@@ -59,20 +59,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Cache gems
-        uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gem-
+      # - name: Cache gems
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: vendor/bundle
+      #     key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-gem-
 
       - name: Install dependencies
         run: |
-          ruby -v
-          bundler -v
           bundle install --path vendor/bundle --jobs 4 --retry 3
-          bundle cache --all -V
           yarn install
 
       - name: Run tests
