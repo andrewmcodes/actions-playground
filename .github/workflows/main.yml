@@ -27,16 +27,29 @@ jobs:
       - uses: actions/checkout@master
       - name: Install libraries
         run: |
-          set -x
+          sudo apt install curl
+          curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
           sudo apt-get update
-          sudo snap install ruby --classic
-          sudo apt-get install --no-install-recommends -y bundler nodejs yarn
+          sudo apt-get install git-core zlib1g-dev build-essential libssl-dev libreadline-dev \
+               libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev \
+               software-properties-common libffi-dev nodejs yarn libpq-dev
+      - name: Install ruby 2.6.5
+        run: |
+          wget http://ftp.ruby-lang.org/pub/ruby/2.6/ruby-2.6.5.tar.gz
+          tar -xzvf ruby-2.6.5.tar.gz
+          cd ruby-2.6.5/
+          ./configure
+          make
+          sudo make install
+          ruby -v
+          cd $GITHUB_WORKSPACE
       - name: Bundle install
         run: |
-          ruby -v
           pwd
-          gem update --system
-          bundle update bundler
+          ruby -v
           bundler -v
           bundle install --path vendor/bundle --jobs 4 --retry 3
       - name: Yarn
