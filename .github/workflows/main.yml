@@ -10,14 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     services:
-      db:
+      postgres:
         image: postgres:11
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: actions_playground_test
-        ports:
-          - 5432/tcp
+        ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -25,8 +22,7 @@ jobs:
           --health-retries 5
       redis:
         image: redis
-        ports:
-          - 6379/tcp
+        ports: ['6379:6379']
         options: --entrypoint redis-server
 
     steps:
@@ -63,10 +59,9 @@ jobs:
         with:
           args: bundle install --path vendor/bundle --jobs 4 --retry 3 && bundle exec rails db:prepare && bundle exec rails test
         env:
-          PG_HOST: postgres
+          PG_HOST: '127.0.0.1'
           PG_USER: postgres
-          PG_PASSWORD: postgres
-          PG_PORT: ${{ job.services.db.ports[5432] }}
+          PG_PORT: 5432
           REDIS_URL: redis://redis:6379/0
           RAILS_ENV: test
 
