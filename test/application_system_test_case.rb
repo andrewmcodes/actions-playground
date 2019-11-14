@@ -1,4 +1,5 @@
 require "test_helper"
+require "webdrivers/chromedriver"
 
 if ENV["SELENIUM_REMOTE_URL"]
   Capybara.javascript_driver = :selenium
