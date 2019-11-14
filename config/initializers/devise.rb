@@ -261,12 +261,12 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
-  env_creds = Rails.application.credentials[Rails.env.to_sym] || {}
-  %i[facebook twitter github].each do |provider|
-    if options == env_creds[provider]
-      config.omniauth provider, options[:app_id], options[:app_secret], options.fetch(:options, {})
-    end
-  end
+  # env_creds = Rails.application.credentials[Rails.env.to_sym] || {}
+  # %i[facebook twitter github].each do |provider|
+  #   if options == env_creds[provider]
+  #     config.omniauth provider, options[:app_id], options[:app_secret], options.fetch(:options, {})
+  #   end
+  # end
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
