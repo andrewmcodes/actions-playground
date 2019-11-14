@@ -51,21 +51,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
-      - name: Bundle install
-        uses: andrewmcodes/rails-test-runner-action@master
-        with:
-          args: bundle install --path vendor/bundle --jobs 4 --retry 3
-
       - name: Yarn install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: andrewmcodes/rails-test-runner-action@master
         with:
           args: yarn install
 
-      - name: Run tests
+      - name: Bundle install
         uses: andrewmcodes/rails-test-runner-action@master
         with:
-          args: bundle exec rails db:prepare && bundle exec rails test
+          args: gem install bundler:2.0.2 && bundle update --bundler && bundle install --path vendor/bundle --jobs 4 --retry 3 && bundle exec rails db:prepare && bundle exec rails test
         env:
           PG_HOST: localhost
           PG_USER: postgres
@@ -73,3 +68,21 @@ jobs:
           PG_PASSWORD: ""
           REDIS_URL: redis://localhost:6379/0
           RAILS_ENV: test
+
+        - name: Slack Notifier
+          uses: k0kubun/action-slack@v1.0.0
+          with:
+            payload: |
+              {
+                "attachments": [{
+                  "title": "${{ job.status }}: ${{ github.workflow }}",
+                  "title_link": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks",
+                  "text": "${{ github.repository }}@${{ github.ref }}: <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>",
+                  "fields": [{ "value": ${{ toJson(github.event.head_commit.message) }}, "short": false }],
+                  "footer": "${{ github.event.head_commit.committer.name }} at ${{ github.event.head_commit.timestamp }}",
+                  "color": "danger"
+                }]
+              }
+          env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          if: failure() && github.event_name == 'push'
