@@ -21,8 +21,8 @@ jobs:
         SELENIUM_HOST: selenium
         SELENIUM_PORT: 4444
       volumes:
-        - repo_gems:/repo/vendor/cache
-        - repo_modules:/repo/node_modules
+        - /usr/actions-playground/vendor/cache
+        - /usr/actions-playground/node_modules
         - bundle:/usr/local/bundle
 
     services:
@@ -64,7 +64,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
-      - run: pwd
       - name: Install dependencies
         run: |
           ruby -v
@@ -76,7 +75,8 @@ jobs:
       - name: Run tests
         run: |
           bin/rails db:test:prepare
-          bin/rails test
+          bin/rails test -p
+          bin/rails test:system
 
       - name: Slack Notifier
         uses: k0kubun/action-slack@v1.0.0
