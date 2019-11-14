@@ -56,7 +56,7 @@ jobs:
       - name: Bundle install
         uses: andrewmcodes/rails-test-runner-action@master
         with:
-          args: bundle install --path vendor/bundle --jobs 4 --retry 3 && bundle exec rails db:test:prepare && bundle exec rails test
+          args: bundle install --path vendor/bundle --jobs 4 --retry 3 && bin/rails db:test:prepare && bin/rails t
         env:
           PG_HOST: 'postgres'
           PG_USER: postgres
