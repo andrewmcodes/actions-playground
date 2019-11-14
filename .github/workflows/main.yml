@@ -29,7 +29,8 @@ jobs:
         run: |
           set -x
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y ruby bundler nodejs yarn
+          sudo snap install ruby --classic
+          sudo apt-get install --no-install-recommends -y bundler nodejs yarn
       - name: Bundle install
         run: |
           pwd
