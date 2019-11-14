@@ -1,0 +1,74 @@
+name: Linters
+
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches:
+      - master
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    container:
+      image: andrewmcodes/rails-test-environment:latest
+      volumes:
+        - /usr/actions-playground/vendor/cache
+        - /usr/actions-playground/node_modules
+        - bundle:/usr/local/bundle
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache yarn
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Cache gems
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gem-
+
+      - name: Install dependencies
+        run: |
+          bundle install --path vendor/bundle --jobs 4 --retry 3
+          yarn install
+
+      - name: Run standardrb check
+        run: bundle exec standardrb --format progress
+
+      - name: Run prettier-standard check
+        run: yarn run prettier-standard --check app/**/*.js
+
+      - name: Run zeitwerk check
+        run: bundle exec rails zeitwerk:check
+
+      - name: Slack Notifier
+        uses: k0kubun/action-slack@v1.0.0
+        with:
+          payload: |
+            {
+              "attachments": [{
+                "title": "${{ job.status }}: ${{ github.workflow }}",
+                "title_link": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks",
+                "text": "${{ github.repository }}@${{ github.ref }}: <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>",
+                "fields": [{ "value": ${{ toJson(github.event.head_commit.message) }}, "short": false }],
+                "footer": "${{ github.event.head_commit.committer.name }} at ${{ github.event.head_commit.timestamp }}",
+                "color": "danger"
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: failure() && github.event_name == 'push'

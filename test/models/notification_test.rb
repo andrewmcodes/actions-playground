@@ -5,7 +5,7 @@ class NotificationTest < ActiveSupport::TestCase
     assert true
   end
 
-  test "the false" do
-    assert false
-  end
+  # test "the false" do
+  #   assert false
+  # end
 end

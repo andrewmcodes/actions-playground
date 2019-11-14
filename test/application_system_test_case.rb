@@ -1,6 +1,6 @@
 require "test_helper"
 
-if ENV["SELENIUM_HOST"] == "selenium"
+if ENV["SELENIUM_REMOTE_URL"]
   Capybara.javascript_driver = :selenium
   Capybara.run_server = false
 
@@ -10,7 +10,7 @@ if ENV["SELENIUM_HOST"] == "selenium"
     Capybara::Selenium::Driver.new(
       app,
       browser: :remote,
-      url: "http://#{ENV["SELENIUM_HOST"]}:#{ENV["SELENIUM_PORT"]}/wd/hub",
+      url: ENV["SELENIUM_REMOTE_URL"],
       desired_capabilities: caps
     )
   end

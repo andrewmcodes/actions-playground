@@ -1,4 +1,5 @@
-name: Main
+name: Tests
+
 on:
   pull_request:
     branches:
@@ -9,6 +10,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    container:
+      image: andrewmcodes/rails-test-environment:latest
+      env:
+        PG_HOST: 'postgres'
+        PG_USER: postgres
+        PG_PORT: 5432
+        REDIS_URL: redis://redis:6379/0
+        RAILS_ENV: test
+        SELENIUM_REMOTE_URL: http://webdriver_chrome:4444/wd/hub
+      volumes:
+        - /usr/actions-playground/vendor/cache
+        - /usr/actions-playground/node_modules
+        - bundle:/usr/local/bundle
+
     services:
       postgres:
         image: postgres:11
@@ -24,6 +40,9 @@ jobs:
         image: redis
         ports: ['6379:6379']
         options: --entrypoint redis-server
+      webdriver_chrome:
+        image: selenium/standalone-chrome
+        ports: ['4444:4444', '5900:5900']
 
     steps:
       - uses: actions/checkout@master
@@ -48,29 +67,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
-      - name: Run rubocop
-        uses: andrewmcodes/reviewdog-rubocop-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: |
+          ruby -v
+          bundler -v
+          bundle install --path vendor/bundle --jobs 4 --retry 3
+          bundle cache --all -V
+          yarn install
 
-      - name: Yarn install
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        uses: andrewmcodes/rails-test-runner-action@master
-        with:
-          args: yarn install
-
-      - name: Bundle install
-        uses: andrewmcodes/rails-test-runner-action@master
-        with:
-          args: bundle config path vendor/bundle && bundle install --path vendor/bundle --jobs 4 --retry 3 && bin/rails db:test:prepare && bin/rails t
-        env:
-          PG_HOST: 'postgres'
-          PG_USER: postgres
-          PG_PORT: 5432
-          REDIS_URL: redis://redis:6379/0
-          RAILS_ENV: test
-          SELENIUM_HOST: selenium
-          SELENIUM_PORT: 4444
+      - name: Run tests
+        run: |
+          bin/rails db:test:prepare
+          bin/rails test -p
+          bin/rails test:system
 
       - name: Slack Notifier
         uses: k0kubun/action-slack@v1.0.0
