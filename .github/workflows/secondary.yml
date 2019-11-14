@@ -1,4 +1,4 @@
-name: Main
+name: Secondary
 on:
   pull_request:
     branches:
@@ -24,6 +24,7 @@ jobs:
         options: --entrypoint redis-server
 
     steps:
+      - uses: actions/checkout@master
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -39,12 +40,12 @@ jobs:
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gem-
-      - uses: actions/checkout@master
       - name: Bundle install
         uses: andrewmcodes/actions-bundler@master
         with:
           args: bundle install --path vendor/bundle --jobs 4 --retry 3
       - name: Yarn
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: andrewmcodes/actions-bundler@master
         with:
           args: yarn install
