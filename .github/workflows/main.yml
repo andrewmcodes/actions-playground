@@ -48,15 +48,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
-      - name: Pull dockerfile
-        uses: docker://andrewmcodes/rails-test-environment:latest
+      - name: Run rubocop
+        uses: andrewmcodes/reviewdog-rubocop-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Yarn install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install
+        uses: andrewmcodes/rails-test-runner-action@master
+        with:
+          args: yarn install
 
       - name: Bundle install
-        run: bundle config path vendor/bundle && bundle install --path vendor/bundle --jobs 4 --retry 3 && bin/rails db:test:prepare && bin/rails t
+        uses: andrewmcodes/rails-test-runner-action@master
+        with:
+          args: bundle config path vendor/bundle && bundle install --path vendor/bundle --jobs 4 --retry 3 && bin/rails db:test:prepare && bin/rails t
         env:
           PG_HOST: 'postgres'
           PG_USER: postgres
