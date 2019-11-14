@@ -14,9 +14,9 @@ jobs:
     container:
       image: andrewmcodes/rails-test-environment:latest
       volumes:
-        - /usr/actions-playground/vendor/cache
+        # - /usr/actions-playground/vendor/cache
         - /usr/actions-playground/node_modules
-        - bundle:/usr/local/bundle
+        # - bundle:/usr/local/bundle
 
     steps:
       - uses: actions/checkout@master
@@ -33,13 +33,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Cache gems
-        uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gem-
+      # - name: Cache gems
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: vendor/bundle
+      #     key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-gem-
 
       - name: Install dependencies
         run: |

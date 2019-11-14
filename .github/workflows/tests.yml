@@ -69,10 +69,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ruby -v
-          bundler -v
           bundle install --path vendor/bundle --jobs 4 --retry 3
-          bundle cache --all -V
           yarn install
 
       - name: Run tests
