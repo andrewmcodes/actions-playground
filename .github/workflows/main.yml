@@ -12,6 +12,10 @@ jobs:
     services:
       db:
         image: postgres:11
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_DB: postgres
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
@@ -20,7 +24,8 @@ jobs:
           --health-retries 5
       redis:
         image: redis
-        ports: ['6379:6379']
+        ports:
+        - 5432/tcp
         options: --entrypoint redis-server
 
     steps:
@@ -54,6 +59,9 @@ jobs:
         with:
           args: bundle exec rails db:prepare && bundle exec rails test
         env:
-          DATABASE_URL: postgres://postgres:@127.0.0.1:5432
-          REDIS_URL: redis://127.0.0.1:6379/0
+          PG_HOST: localhost
+          PG_USER: postgres
+          PG_PORT: ${{ job.services.postgres.ports[5432] }}
+          PG_PASSWORD: ""
+          REDIS_URL: redis://localhost:6379/0
           RAILS_ENV: test
