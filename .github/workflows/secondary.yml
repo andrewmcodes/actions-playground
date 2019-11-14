@@ -43,7 +43,9 @@ jobs:
       - name: Bundle install
         uses: andrewmcodes/actions-bundler@master
         with:
-          args: gem install bundler -v "2.0.1" && bundle install --path vendor/bundle --jobs 4 --retry 3
+          args: |
+            bundle update --bundler
+            bundle install --path vendor/bundle --jobs 4 --retry 3
       - name: Yarn
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: andrewmcodes/actions-bundler@master
