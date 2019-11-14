@@ -48,11 +48,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
-      - name: Run reviewdog rubocop
-        uses: andrewmcodes/reviewdog-rubocop-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Yarn install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: andrewmcodes/rails-test-runner-action@master
