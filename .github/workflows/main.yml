@@ -24,37 +24,34 @@ jobs:
         options: --entrypoint redis-server
 
     steps:
-      - uses: actions/checkout@master
-      - name: Install libraries
-        run: |
-          sudo apt install curl
-          curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-          echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
 
-          sudo apt-get update
-          sudo apt-get install git-core zlib1g-dev build-essential libssl-dev libreadline-dev \
-               libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev \
-               software-properties-common libffi-dev nodejs yarn libpq-dev
-      - name: Install ruby 2.6.5
-        run: |
-          wget http://ftp.ruby-lang.org/pub/ruby/2.6/ruby-2.6.5.tar.gz
-          tar -xzvf ruby-2.6.5.tar.gz
-          cd ruby-2.6.5/
-          ./configure
-          make
-          sudo make install
-          ruby -v
-          cd $GITHUB_WORKSPACE
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gem-
+      - uses: actions/checkout@master
       - name: Bundle install
+        uses: andrewmcodes/actions-bundler@master
         run: |
-          pwd
           ruby -v
           bundler -v
           bundle install --path vendor/bundle --jobs 4 --retry 3
       - name: Yarn
-        run: yarn
+        uses: andrewmcodes/actions-bundler@master
+        run: yarn install
       - name: test
+        uses: andrewmcodes/actions-bundler@master
         run: |
           bundle exec rails db:prepare
           bundle exec rails test
