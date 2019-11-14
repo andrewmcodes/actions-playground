@@ -3,18 +3,18 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS", 10).to_i %>
   timeout: <%= ENV.fetch("PG_TIMEOUT_IN_SECONDS", 3).to_i.seconds %>
-  username: <%= ENV.fetch("PG_USER", postgres) %>
+  username: <%= ENV.fetch("PG_USER", "postgres") %>
   password: <%= ENV.fetch("PG_PASSWORD", "") %>
 
 development:
   <<: *default
-  host: <%= ENV.fetch("PG_HOST", localhost) %>
+  host: <%= ENV.fetch("PG_HOST", "localhost") %>
   port: <%= ENV.fetch("PG_PORT", 5432).to_i %>
   database: "actions_playground_development"
 
 test:
   <<: *default
-  host: <%= ENV.fetch("PG_HOST", localhost) %>
+  host: <%= ENV.fetch("PG_HOST", "localhost") %>
   port: <%= ENV.fetch("PG_PORT", 5432).to_i %>
   database: actions_playground_test
 
