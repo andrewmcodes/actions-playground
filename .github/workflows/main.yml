@@ -51,6 +51,7 @@ jobs:
       - uses: docker://andrewmcodes/rails-test-environment:latest
         run: |
           bundle install --path vendor/bundle --jobs 4 --retry 3
+          bundle cache --all -V
           yarn install
 
       - name: Run tests
