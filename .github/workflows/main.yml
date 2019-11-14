@@ -47,7 +47,6 @@ jobs:
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gem-
-
       - name: Yarn install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: andrewmcodes/rails-test-runner-action@master
@@ -57,9 +56,9 @@ jobs:
       - name: Bundle install
         uses: andrewmcodes/rails-test-runner-action@master
         with:
-          args: bundle install --path vendor/bundle --jobs 4 --retry 3 && bundle exec rails db:prepare && bundle exec rails test
+          args: bundle install --path vendor/bundle --jobs 4 --retry 3 && bundle exec rails db:test:prepare && bundle exec rails test
         env:
-          PG_HOST: '127.0.0.1'
+          PG_HOST: 'postgres'
           PG_USER: postgres
           PG_PORT: 5432
           REDIS_URL: redis://redis:6379/0
