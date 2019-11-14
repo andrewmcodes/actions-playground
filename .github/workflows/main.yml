@@ -25,18 +25,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-      - name: Install
-        uses: docker://culturehq/actions-bundler:latest
-        with:
-          args: install
+      - name: Install libraries
+        run: |
+          set -x
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y ruby bundler nodejs yarn
+      - name: Bundle install
+        run: |
+          pwd
+          bundle install --path vendor/bundle --jobs 4 --retry 3
       - name: Yarn
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: install
-      - name: Test
-        uses: docker://culturehq/actions-bundler:latest
-        with:
-          args: exec rake test
+        run: yarn
+      - name: test
+        run: |
+          bundle exec rails db:prepare
+          bundle exec rails test
         env:
           DATABASE_URL: postgres://postgres:@127.0.0.1:5432
           REDIS_URL: redis://127.0.0.1:6379/0
