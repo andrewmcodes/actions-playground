@@ -48,7 +48,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gem-
 
-      - name: Run rubocop
+      - name: Run reviewdog rubocop
         uses: andrewmcodes/reviewdog-rubocop-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
