@@ -1,4 +1,4 @@
-name: Main
+name: Main copy 2
 on:
   pull_request:
     branches:
@@ -43,7 +43,7 @@ jobs:
       - name: Bundle install
         uses: andrewmcodes/rails-test-runner-action@master
         with:
-          args: gem install bundler:2.0.2 && bundle update --bundler && bundle install --path vendor/bundle --jobs 4 --retry 3
+          args: bundle update --bundler && bundle install --path vendor/bundle --jobs 4 --retry 3
       - name: Yarn
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         uses: andrewmcodes/rails-test-runner-action@master
