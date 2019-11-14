@@ -41,6 +41,9 @@ jobs:
         image: redis
         ports: ['6379:6379']
         options: --entrypoint redis-server
+      selenium:
+        image: selenium/standalone-chrome-debug:3.0.1-germanium
+        ports: ['4444:4444', '5900:5900']
 
     steps:
       - uses: actions/checkout@master
