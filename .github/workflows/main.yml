@@ -33,7 +33,11 @@ jobs:
           sudo apt-get install --no-install-recommends -y bundler nodejs yarn
       - name: Bundle install
         run: |
+          ruby -v
           pwd
+          gem update --system
+          bundle update bundler
+          bundler -v
           bundle install --path vendor/bundle --jobs 4 --retry 3
       - name: Yarn
         run: yarn
