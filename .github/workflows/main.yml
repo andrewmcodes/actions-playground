@@ -24,8 +24,7 @@ jobs:
           --health-retries 5
       redis:
         image: redis
-        ports:
-        - 5432/tcp
+        ports: ['6379:6379']
         options: --entrypoint redis-server
 
     steps:
@@ -60,11 +59,11 @@ jobs:
       - name: Bundle install
         uses: andrewmcodes/rails-test-runner-action@master
         with:
-          args: gem install bundler:2.0.2 && bundle update --bundler && bundle install --path vendor/bundle --jobs 4 --retry 3 && bundle exec rails db:prepare && bundle exec rails test
+          args: bundle install --path vendor/bundle --jobs 4 --retry 3 && bundle exec rails db:prepare && bundle exec rails test
         env:
           PG_HOST: localhost
           PG_USER: postgres
-          PG_PORT: ${{ job.services.postgres.ports[5432] }}
+          PG_PORT: 5432
           PG_PASSWORD: ""
           REDIS_URL: redis://localhost:6379/0
           RAILS_ENV: test
