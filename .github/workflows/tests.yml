@@ -49,12 +49,7 @@ jobs:
       - uses: actions/checkout@master
       - name: chromedriver?
         run: |
-          echo "==================="
-          ls /usr/bin
-          echo "==================="
-          ls /usr/local/bin
-          echo "==================="
-          which chromedriver
+          unzip /usr/local/bin/chromedriver.zip
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
