@@ -4,7 +4,7 @@ require "test_helper"
 if ENV["SELENIUM_REMOTE_URL"]
   Capybara.javascript_driver = :selenium
   Capybara.run_server = false
-
+  `echo "-------"`
   args = ["--no-default-browser-check", "--start-maximized", "--no-sandbox", "--disable-dev-shm-usage"]
   caps = Selenium::WebDriver::Remote::Capabilities.chrome("chromeOptions" => {"args" => args})
   Capybara.register_driver :selenium do |app|
