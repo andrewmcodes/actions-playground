@@ -1,21 +1,26 @@
 require "test_helper"
-require "webdrivers/chromedriver"
 
-if ENV["SELENIUM_REMOTE_URL"]
-  Capybara.javascript_driver = :selenium
-  Capybara.run_server = false
-  args = ["--no-default-browser-check", "--start-maximized", "--no-sandbox", "--disable-dev-shm-usage", "--headless"]
-  caps = Selenium::WebDriver::Remote::Capabilities.chrome("chromeOptions" => {"args" => args})
-  Capybara.register_driver :selenium do |app|
-    Capybara::Selenium::Driver.new(
-      app,
-      browser: :remote,
-      url: ENV["SELENIUM_REMOTE_URL"],
-      desired_capabilities: caps
-    )
-  end
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new(app, browser: :chrome)
 end
 
+Capybara.register_driver :headless_chrome do |app|
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+    chromeOptions: {
+      args: %w[headless enable-features=NetworkService,NetworkServiceInProcess]
+    }
+  )
+
+  Capybara::Selenium::Driver.new app,
+    browser: :chrome,
+    url: ENV["SELENIUM_REMOTE_URL"],
+    desired_capabilities: capabilities
+end
+
+Capybara.default_driver = :headless_chrome
+Capybara.javascript_driver = :headless_chrome
+
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
+  system("which chromedriver")
   driven_by :selenium, using: :headless_chrome
 end
