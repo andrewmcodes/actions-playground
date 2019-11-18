@@ -19,7 +19,6 @@ jobs:
         PG_PORT: 5432
         REDIS_URL: redis://redis:6379/0
         RAILS_ENV: test
-        SELENIUM_REMOTE_URL: http://0.0.0.0:4444/wd/hub
         DISABLE_SPRING: 1
       volumes:
         - /usr/actions-playground/vendor/cache
@@ -41,7 +40,8 @@ jobs:
         image: redis
         ports: ['6379:6379']
         options: --entrypoint redis-server
-      webdriver_chrome:
+
+      selenium:
         image: selenium/standalone-chrome-debug:3.0.1-germanium
         ports: ['4444:4444', '5900:5900']
 
@@ -80,7 +80,7 @@ jobs:
           bin/rails test -p
           bin/rails test:system
         env:
-          SELENIUM_REMOTE_URL: http://webdriver_chrome:4444/wd/hub
+          SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
       - name: Slack Notifier
         uses: k0kubun/action-slack@v1.0.0
         with:

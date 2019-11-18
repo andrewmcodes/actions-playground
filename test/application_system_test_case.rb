@@ -13,7 +13,7 @@ Capybara.register_driver :headless_chrome do |app|
 
   Capybara::Selenium::Driver.new app,
     browser: :chrome,
-    url: "http://127.0.0.1:4444/wd/hub",
+    url: ENV["SELENIUM_REMOTE_URL"],
     desired_capabilities: capabilities
 end
 
@@ -22,5 +22,6 @@ Capybara.javascript_driver = :headless_chrome
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   system("which chromedriver")
+  puts ENV["SELENIUM_REMOTE_URL"]
   driven_by :headless_chrome
 end
