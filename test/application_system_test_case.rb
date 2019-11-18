@@ -13,7 +13,7 @@ Capybara.register_driver :headless_chrome do |app|
 
   Capybara::Selenium::Driver.new app,
     browser: :chrome,
-    url: "http://0.0.0.0:4444/wd/hub",
+    url: "http://127.0.0.1:4444/wd/hub",
     desired_capabilities: capabilities
 end
 
