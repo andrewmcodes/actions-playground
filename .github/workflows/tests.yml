@@ -80,7 +80,7 @@ jobs:
           bin/rails test -p
           bin/rails test:system
         env:
-          SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
+          SELENIUM_REMOTE_URL: https://selenium:4444/wd/hub
       - name: Slack Notifier
         uses: k0kubun/action-slack@v1.0.0
         with:
