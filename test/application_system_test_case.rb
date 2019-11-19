@@ -1,7 +1,7 @@
 require "test_helper"
 
 if ENV["SELENIUM_REMOTE_URL"]
-  Capybara.server_host = '0.0.0.0'
+  Capybara.server_host = 'selenium'
   Capybara.register_driver :chrome do |app|
     Capybara::Selenium::Driver.new(app, browser: :chrome)
   end
